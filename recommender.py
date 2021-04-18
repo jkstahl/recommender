@@ -1,6 +1,6 @@
 
 
-from flask import Flask, redirect, render_template, request, url_for
+from flask import Flask, redirect, render_template, request, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import login_user, LoginManager, UserMixin, logout_user, login_required, current_user
@@ -98,15 +98,23 @@ def login():
     login_user(user)
     return redirect(url_for('index'))
 
-@app.route("/test/", methods=["GET", "POST"])
+@app.route("/item_entry/", methods=["GET", "POST"])
 def test():
-    if request.method == 'GET':
-        return render_template("item_entry.html", items=Item.query.all(), error=True)
-    item = Item(name=request.form["name"], category=request.form["category"])
+    if request.method == 'POST':
 
-    db.session.add(item)
-    db.session.commit()
-    return redirect(url_for('test'))
+
+        # Check if it is in the database already
+        if request.form["name"] == '' or request.form["category"] == '':
+            flash('Enter a name and category')
+        elif db.session.query(Item.name).filter_by(name=request.form["name"]).first() == None:
+            item = Item(name=request.form["name"], category=request.form["category"])
+            db.session.add(item)
+            db.session.commit()
+            return redirect(url_for('item_entry'))
+        else:
+            flash("Item Already Exists")
+    return render_template("item_entry.html", items=Item.query.all(), error=True)
+
 
 @app.route("/logout/")
 @login_required

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+
+
+{% block content %}
+
+    {% if current_user.is_authenticated %}
+    <div class="container">
+        <form action="." method="POST" class="row">
+            <div class="form-group">
+                <label for="name">Item Name:</label>
+                <input class="form-control" id="name" name="name" placeholder="Enter item name">
+            </div>
+            <div class="form-group">
+                <label for="name">Item Category:</label>
+                <input class="form-control" id="category" name="category" placeholder="Enter item Category">
+            </div>
+            <button type="submit" class="btn btn-success">Add</button>
+        </form>
+    </div>
+    {% endif %}
+
+    <div class="container">
+  {% for item in items %}
+        <div class="row" style="margin-bottom: 1ex">
+            <div>
+                {{ item.name }} -
+
+                <small>
+                    {{item.category}}
+                </small>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+{% endblock %}
