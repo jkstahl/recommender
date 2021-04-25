@@ -2,9 +2,10 @@
 
 from flask import Flask, redirect, render_template, request, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
 from flask_migrate import Migrate
 from flask_login import login_user, LoginManager, UserMixin, logout_user, login_required, current_user
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
 
 
@@ -69,11 +70,14 @@ class Item(db.Model):
 def load_user(user_id):
     return User.query.filter_by(username=user_id).first()
 
+'''
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "GET":
-        return render_template("main_page.html", comments = Comment.query.all())
-        #return render_template("main_page.html", comments = Comment.query.all(), timestamp=datetime.now())
+        #ratings = Comment.query.
+        ratings_ave = db.session.query(Item.name, func.avg(Comment.rating).label('average')).outerjoin(Comment, Comment.item_id == Item.id).group_by(Comment.item_id)
+
+        return render_template("main_page.html", comments = ratings_ave)
 
     if not current_user.is_authenticated:
         return redirect(url_for('index'))
@@ -82,6 +86,7 @@ def index():
     db.session.add(comment)
     db.session.commit()
     return redirect(url_for('index'))
+'''
 
 @app.route("/login/", methods=["GET", "POST"])
 def login():
@@ -98,11 +103,10 @@ def login():
     login_user(user)
     return redirect(url_for('index'))
 
-@app.route("/item_entry/", methods=["GET", "POST"])
-def test():
+#@app.route("/item_entry/", methods=["GET", "POST"])
+@app.route("/", methods=["GET", "POST"])
+def index():
     if request.method == 'POST':
-
-
         # Check if it is in the database already
         if request.form["name"] == '' or request.form["category"] == '':
             flash('Enter a name and category')
@@ -110,10 +114,56 @@ def test():
             item = Item(name=request.form["name"], category=request.form["category"])
             db.session.add(item)
             db.session.commit()
-            return redirect(url_for('item_entry'))
+            return redirect(url_for('index'))
         else:
             flash("Item Already Exists")
-    return render_template("item_entry.html", items=Item.query.all(), error=True)
+
+    ratings_ave = db.session.query(Item.name, Item.id, func.avg(Comment.rating).label('average')).outerjoin(Comment, Comment.item_id == Item.id).group_by(Comment.item_id)
+    averages = {r.id : (str(round(r.average,1)) if r.average != None else "0") for r in ratings_ave}
+    if current_user.is_authenticated:
+        ratings = Comment.query.filter_by(commenter_id = current_user.id).all()
+        if ratings != None:
+            ratings = {r.item_id : r.rating for r in ratings}
+    else:
+        ratings = {}
+
+    return render_template("item_entry.html", items=Item.query.all(), ratings = ratings, averages = averages)
+
+@app.route('/rate/', methods=('GET', 'POST'))
+@login_required
+def rate():
+    rating = int(request.form["rating"])
+    item = int(request.form["item"])
+    # If user and rating already exist then update
+    rate_db = db.session.query(Comment).filter_by(commenter_id=current_user.id, item_id = item).first()
+    if rate_db != None:
+        rate_db.rating = rating
+    else:
+        db.session.add(Comment(commenter_id = current_user.id, item_id = item, rating = rating))
+    db.session.commit()
+    return 'Rate item: %d,  User: %d, rating: %d' % (item, current_user.id, rating)
+
+@app.route('/register', methods=('GET', 'POST'))
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        error = None
+
+        if not username:
+            error = 'Username is required.'
+        elif not password:
+            error = 'Password is required.'
+        elif db.session.query(User).filter_by(username=request.form["username"]).first() is not None:
+            error = 'User {} is already registered.'.format(username)
+        if error is None:
+            db.session.add(User(username=username, password_hash=generate_password_hash(password)))
+            db.session.commit()
+            return redirect(url_for('login'))
+
+        flash(error)
+
+    return render_template('register.html')
 
 
 @app.route("/logout/")

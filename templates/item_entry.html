@@ -1,10 +1,17 @@
 {% extends 'base.html' %}
 
-
+{% block header %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript">
+    function rated(rating, item) {
+            $.post("{{ url_for('rate') }}", {"rating" : rating, "item" : item});
+    }
+    </script>
+{% endblock %}
 
 {% block content %}
 
-    {% if current_user.is_authenticated %}
+    {% if current_user.username == 'admin' %}
     <div class="container">
         <form action="." method="POST" class="row">
             <div class="form-group">
@@ -21,16 +28,42 @@
     {% endif %}
 
     <div class="container">
-  {% for item in items %}
-        <div class="row" style="margin-bottom: 1ex">
-            <div>
-                {{ item.name }} -
+        <form action="." method="POST">
+            <div class="form-group">
+                <label for="search" style="margin-top:20">Search:</label>
+                <input name="search" class="form-control" id="searchString" placeholder="Enter search..">
+            </div>
+        </form>
+    </div>
 
-                <small>
+    <div class="container">
+    <div class="row">
+
+  {% for item in items %}
+        <div class="card m-3" style="width: 13rem;">
+            <div class="card-body">
+                <h5 class="card-title">{{ item.name }} </h5>
+
+                <p>
                     {{item.category}}
-                </small>
+                </p>
+ {% if current_user.is_authenticated %}
+                <input type="radio" id="rating" name="rate{{item.id}}" value="1" onclick="rated(1, {{item.id}})" {{'checked' if item.id in ratings and ratings[item.id] == 1 else ''}}>
+                <input type="radio" id="rating" name="rate{{item.id}}" value="2" onclick="rated(2, {{item.id}})" {{'checked' if item.id in ratings and ratings[item.id] == 2 else ''}}>
+                <input type="radio" id="rating" name="rate{{item.id}}" value="3" onclick="rated(3, {{item.id}})" {{'checked' if item.id in ratings and ratings[item.id] == 3 else ''}}>
+                <input type="radio" id="rating" name="rate{{item.id}}" value="4" onclick="rated(4, {{item.id}})" {{'checked' if item.id in ratings and ratings[item.id] == 4 else ''}}>
+                <input type="radio" id="rating" name="rate{{item.id}}" value="5" onclick="rated(5, {{item.id}})" {{'checked' if item.id in ratings and ratings[item.id] == 5 else ''}}>
+{% endif %}
+
+                {% if item.id in averages %}
+                <p>Average Rating: {{averages[item.id]}} </p>
+                {% endif %}
             </div>
         </div>
+
     {% endfor %}
     </div>
+    </div>
+
+
 {% endblock %}
