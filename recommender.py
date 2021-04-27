@@ -65,6 +65,7 @@ class Item(db.Model):
     name = db.Column(db.String(4096))
     category = db.Column(db.String(4096))
     posted = db.Column(db.DateTime, default=datetime.now)
+    image = db.Column(db.String(4096), default='thumbs/not_found.png')
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -118,7 +119,7 @@ def index():
         else:
             flash("Item Already Exists")
 
-    ratings_ave = db.session.query(Item.name, Item.id, func.avg(Comment.rating).label('average')).outerjoin(Comment, Comment.item_id == Item.id).group_by(Comment.item_id)
+    ratings_ave = db.session.query(Item.name, Item.id, Item.image, func.avg(Comment.rating).label('average')).outerjoin(Comment, Comment.item_id == Item.id).group_by(Comment.item_id)
     averages = {r.id : (str(round(r.average,1)) if r.average != None else "0") for r in ratings_ave}
     if current_user.is_authenticated:
         ratings = Comment.query.filter_by(commenter_id = current_user.id).all()
