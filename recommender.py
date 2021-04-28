@@ -65,7 +65,7 @@ class Item(db.Model):
     name = db.Column(db.String(4096))
     category = db.Column(db.String(4096))
     posted = db.Column(db.DateTime, default=datetime.now)
-    image = db.Column(db.String(4096), default='thumbs/not_found.png')
+    image = db.Column(db.String(4096), default='static/thumbs/not_found.png')
 
 @login_manager.user_loader
 def load_user(user_id):
