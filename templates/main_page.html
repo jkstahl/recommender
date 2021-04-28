@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+
+        <div class="container">
+        {% for comment in comments %}
+            <div class="row" style="margin-bottom: 1ex">
+                <div>
+                    {{ comment.name }} - {{ comment.average }}
+                </div>
+
+            </div>
+        {% endfor %}
+
+        {% if current_user.is_authenticated %}
+
+        {% endif %}
+        </div>
+{% endblock %}
