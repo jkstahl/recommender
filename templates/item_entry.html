@@ -41,7 +41,7 @@
 							</div>
 							<div class="input-group-append">
 								<select name="category" id="cars" class="form-control">
-								    <option value="all" {{'selected' if args['category'] == 'All' else ''}}>All</option>
+								    <option value="All" {{'selected' if args['category'] == 'All' else ''}}>All</option>
 								    {% for category in categories %}
 								    	<option value="{{category}}" {{'selected' if args['category'] == category else ''}}>{{category}}</option>
 								    {% endfor %}
