@@ -3,10 +3,20 @@
 {% block header %}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script type="text/javascript">
+	<script async custom-element="amp-form" src="https://cdn.ampproject.org/v0/amp-form-0.1.js"></script>
+	<script async custom-template="amp-mustache" src="https://cdn.ampproject.org/v0/amp-mustache-0.2.js"></script>
     function rated(rating, item) {
             $.post("{{ url_for('rate') }}", {"rating" : rating, "item" : item});
     }
     </script>
+    <style>
+    .card-text {
+    	margin: 0;
+    }
+
+
+
+    </style>
 {% endblock %}
 
 {% block content %}
@@ -40,7 +50,7 @@
 							    <button class="btn btn-outline-secondary" type="submit">Search</button>
 							</div>
 							<div class="input-group-append">
-								<select name="category" id="cars" class="form-control">
+								<select name="category" id="cars" class="form-control" onchange="this.form.submit()">
 								    <option value="All" {{'selected' if args['category'] == 'All' else ''}}>All</option>
 								    {% for category in categories %}
 								    	<option value="{{category}}" {{'selected' if args['category'] == category else ''}}>{{category}}</option>
@@ -62,26 +72,27 @@
     <div class="row">
 
   {% for item in items %}
-        <div class="card m-2" style="width: 13rem;">
+        <div class="card shadow m-2" style="width: 13rem;text-align=center;">
             <img "card-img-top" src="{{item.image}}">
-            <div class="card-body">
+            <div class="card-body text-center" style="padding:10px;text-align=center;">
 
-
-                <h5 class="card-title">{{ item.name }} </h5>
-
-                <p>
-                    {{item.category}}
-                </p>
+                <h5 class="card-title card-text">{{ item.name }} </h5>
+				<!-- 
+                <p class="card-text">{{item.category}} </p>
+				-->
+                
  {% if current_user.is_authenticated %}
+ 				<span class="starRating">
                 <input type="radio" id="rating" name="rate{{item.id}}" value="1" onclick="rated(1, {{item.id}})" {{'checked' if item.id in ratings and ratings[item.id] == 1 else ''}}>
                 <input type="radio" id="rating" name="rate{{item.id}}" value="2" onclick="rated(2, {{item.id}})" {{'checked' if item.id in ratings and ratings[item.id] == 2 else ''}}>
                 <input type="radio" id="rating" name="rate{{item.id}}" value="3" onclick="rated(3, {{item.id}})" {{'checked' if item.id in ratings and ratings[item.id] == 3 else ''}}>
                 <input type="radio" id="rating" name="rate{{item.id}}" value="4" onclick="rated(4, {{item.id}})" {{'checked' if item.id in ratings and ratings[item.id] == 4 else ''}}>
                 <input type="radio" id="rating" name="rate{{item.id}}" value="5" onclick="rated(5, {{item.id}})" {{'checked' if item.id in ratings and ratings[item.id] == 5 else ''}}>
+				</span>
 {% endif %}
 
                 {% if item.id in averages %}
-                <p>Average Rating: {{averages[item.id]}} </p>
+                <p class="card-text">Average Rating: {{averages[item.id]}} </p>
                 {% endif %}
             </div>
         </div>

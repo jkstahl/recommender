@@ -1,4 +1,4 @@
-Make;Model;year_start;year_end
+name1;name2;year_start;year_end
 Acura;CL;1998;2003
 Acura;EL;1997;2005
 Acura;ILX;2012;-
@@ -408,7 +408,7 @@ Geely;Emgrand EC7;2009;-
 Geely;Emgrand GS;2016;-
 Geely;Emgrand X7;2011;-
 Geely;GC9;2015;-
-Geely;GС6;2014;-
+Geely;GÐ¡6;2014;-
 Geely;MK;2008;-
 Geely;Otaka;2006;2009
 Geely;Vision;2006;-
@@ -1051,8 +1051,6 @@ Toyota;Vitz;2005;-
 Toyota;Yaris;1999;-
 Toyota;Yaris Verso;1999;2005
 UAZ;Pickup;2008;-
-UAZ;Патриот;2005;-
-UAZ;Хантер;2003;-
 VAZ;2101-2107;1976;2012
 VAZ;2108, 2109, 21099;1984;2004
 VAZ;2110, 2111, 2112;1996;-
@@ -1066,11 +1064,6 @@ VAZ;Vesta Sport;2018;-
 VAZ;Vesta SW;2017;-
 VAZ;XRay;2016;-
 VAZ;XRay Cross;2018;-
-VAZ;Веста;2015;-
-VAZ;Калина;2004;-
-VAZ;Нива 4X4;1977;-
-VAZ;Ока;1988;2008
-VAZ;Приора;2007;-
 Volkswagen;Amarok;1990;-
 Volkswagen;Arteon;2017;-
 Volkswagen;Beetle;2011;-

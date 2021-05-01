@@ -2,7 +2,7 @@ import glob, os
 from PIL import Image
 import recommender as r
 
-thumb_size = (192,128)
+thumb_size = (256,256)
 thumb_dir = os.path.join('static', 'thumbs')
 
 for image_fname in glob.glob('raw_images/*png')+ glob.glob('raw_images/*jpg') + glob.glob('raw_images/*jpeg'):
