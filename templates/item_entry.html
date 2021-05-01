@@ -13,7 +13,7 @@
 
     {% if current_user.username == 'admin' %}
     <div class="container">
-        <form action="." method="POST" class="row">
+        <form action="/" method="POST" class="row">
             <div class="form-group">
                 <label for="name">Item Name:</label>
                 <input class="form-control" id="name" name="name" placeholder="Enter item name">
@@ -22,18 +22,40 @@
                 <label for="name">Item Category:</label>
                 <input class="form-control" id="category" name="category" placeholder="Enter item Category">
             </div>
-            <button type="submit" class="btn btn-success">Add</button>
+            <button type="submit" class="btn btn-success" name="new_item" value="new_item">Add</button>
         </form>
     </div>
     {% endif %}
 
     <div class="container">
-        <form action="." method="POST">
-            <div class="form-group">
+
+        <form action="/" method="GET">
+            <div class="form-group ">
                 <label for="search" style="margin-top:20">Search:</label>
-                <input name="search" class="form-control" id="searchString" placeholder="Enter search..">
+                <div class="row">
+	                <div class="col-6">
+		                <div class="input-group mb-3">
+		                	<input name="search" class="form-control" id="searchString" placeholder="Enter search.."  aria-describedby="basic-addon2" value="{{args.get('search', '')}}">
+							<div class="input-group-append">
+							    <button class="btn btn-outline-secondary" type="submit">Search</button>
+							</div>
+							<div class="input-group-append">
+								<select name="category" id="cars" class="form-control">
+								    <option value="all" {{'selected' if args['category'] == 'All' else ''}}>All</option>
+								    {% for category in categories %}
+								    	<option value="{{category}}" {{'selected' if args['category'] == category else ''}}>{{category}}</option>
+								    {% endfor %}
+								</select>
+							</div>
+						</div>
+	                </div>
+              	
+	                
+                </div>
             </div>
         </form>
+
+        
     </div>
 
     <div class="container">

@@ -1,6 +1,8 @@
 import recommender as r
+import sys
 
-with open('items/cars.csv') as fp:
+
+with open('items/cars.csv',encoding='latin1') as fp:
     first_line = fp.readline()
     for line in fp:
         cols = line.split(';')
