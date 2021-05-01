@@ -3,8 +3,7 @@
 {% block header %}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script type="text/javascript">
-	<script async custom-element="amp-form" src="https://cdn.ampproject.org/v0/amp-form-0.1.js"></script>
-	<script async custom-template="amp-mustache" src="https://cdn.ampproject.org/v0/amp-mustache-0.2.js"></script>
+
     function rated(rating, item) {
             $.post("{{ url_for('rate') }}", {"rating" : rating, "item" : item});
     }
@@ -13,10 +12,8 @@
     .card-text {
     	margin: 0;
     }
-
-
-
     </style>
+
 {% endblock %}
 
 {% block content %}
@@ -82,13 +79,13 @@
 				-->
                 
  {% if current_user.is_authenticated %}
- 				<span class="starRating">
+ 				
                 <input type="radio" id="rating" name="rate{{item.id}}" value="1" onclick="rated(1, {{item.id}})" {{'checked' if item.id in ratings and ratings[item.id] == 1 else ''}}>
                 <input type="radio" id="rating" name="rate{{item.id}}" value="2" onclick="rated(2, {{item.id}})" {{'checked' if item.id in ratings and ratings[item.id] == 2 else ''}}>
                 <input type="radio" id="rating" name="rate{{item.id}}" value="3" onclick="rated(3, {{item.id}})" {{'checked' if item.id in ratings and ratings[item.id] == 3 else ''}}>
                 <input type="radio" id="rating" name="rate{{item.id}}" value="4" onclick="rated(4, {{item.id}})" {{'checked' if item.id in ratings and ratings[item.id] == 4 else ''}}>
                 <input type="radio" id="rating" name="rate{{item.id}}" value="5" onclick="rated(5, {{item.id}})" {{'checked' if item.id in ratings and ratings[item.id] == 5 else ''}}>
-				</span>
+				
 {% endif %}
 
                 {% if item.id in averages %}
