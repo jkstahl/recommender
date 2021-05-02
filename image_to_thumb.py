@@ -1,17 +1,22 @@
 import glob, os
-from PIL import Image
+
+try:
+    from PIL import Image
+except:
+    Image = None
 import recommender as r
 
 thumb_size = (256,256)
 thumb_dir = os.path.join('static', 'thumbs')
 
-for image_fname in glob.glob('raw_images/*png')+ glob.glob('raw_images/*jpg') + glob.glob('raw_images/*jpeg'):
-    image = Image.open(image_fname)
-    im2 = image.resize(thumb_size, Image.ANTIALIAS)
-    thumb_path = os.path.join(thumb_dir, os.path.basename(image_fname))
-    print (thumb_path)
+if Image != None: # we can still try to pull in the images if pil is not there.
+    for image_fname in glob.glob('raw_images/*png')+ glob.glob('raw_images/*jpg') + glob.glob('raw_images/*jpeg'):
+        image = Image.open(image_fname)
+        im2 = image.resize(thumb_size, Image.ANTIALIAS)
+        thumb_path = os.path.join(thumb_dir, os.path.basename(image_fname))
+        print (thumb_path)
 
-    im2.save(thumb_path)
+        im2.save(thumb_path)
     
 # go back through and update all items with image path that are in static/thumbs already
 for thumb_path in glob.glob(os.path.join(thumb_dir, '*') ):
