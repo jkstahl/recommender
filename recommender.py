@@ -16,6 +16,7 @@ SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{password}@{hostnam
     username="neobaud",
     password="600*$53IfrH!",
     hostname="neobaud.mysql.pythonanywhere-services.com",
+    #hostname="127.0.0.1:3306",
     databasename="neobaud$recommender",
 )
 app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
@@ -65,7 +66,8 @@ class Item(db.Model):
     name = db.Column(db.String(4096))
     category = db.Column(db.String(4096))
     posted = db.Column(db.DateTime, default=datetime.now)
-    image = db.Column(db.String(4096), default='thumbs/not_found.png')
+    image = db.Column(db.String(4096), default='static/thumbs/not_found.png')
+    tags = db.Column(db.String(4096))
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -109,6 +111,7 @@ def login():
 def index():
     if request.method == 'POST':
         # Check if it is in the database already
+
         if request.form["name"] == '' or request.form["category"] == '':
             flash('Enter a name and category')
         elif db.session.query(Item.name).filter_by(name=request.form["name"]).first() == None:
@@ -118,9 +121,18 @@ def index():
             return redirect(url_for('index'))
         else:
             flash("Item Already Exists")
+            return redirect(url_for('index'))
 
+        return redirect(url_for('index'))
+    
+
+    if request.form.get('search'):
+        flash('search it %s' % request.form.get('search'))
+        
+        
     ratings_ave = db.session.query(Item.name, Item.id, Item.image, func.avg(Comment.rating).label('average')).outerjoin(Comment, Comment.item_id == Item.id).group_by(Comment.item_id)
-    averages = {r.id : (str(round(r.average,1)) if r.average != None else "0") for r in ratings_ave}
+    averages = {r.id : (str(round(r.average,1)) if r.average != None else "0") for r in ratings_ave  }
+        
     if current_user.is_authenticated:
         ratings = Comment.query.filter_by(commenter_id = current_user.id).all()
         if ratings != None:
@@ -128,7 +140,16 @@ def index():
     else:
         ratings = {}
 
-    return render_template("item_entry.html", items=Item.query.all(), ratings = ratings, averages = averages)
+    f = request.args.get('search').lower() if request.args.get('search') != None else ''
+    filter_items = []
+    categories = set([])
+    for item in Item.query.all():
+        categories.add(item.category)
+        if f in item.name.lower() and (request.args.get('category', 'All') == 'All' or request.args.get('category') == item.category):
+            filter_items.append(item)
+    #filter_items = []
+        
+    return render_template("item_entry.html", items=filter_items, ratings = ratings, averages = averages, categories=categories, args=request.args)
 
 @app.route('/rate/', methods=('GET', 'POST'))
 @login_required
